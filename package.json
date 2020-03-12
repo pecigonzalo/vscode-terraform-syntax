@@ -40,10 +40,8 @@
       "path": "./syntaxes/terraform.tmLanguage.json"
     }]
   },
-  "dependencies": {
-    "js-yaml": "^3.13.1"
-  },
   "devDependencies": {
+    "js-yaml": "^3.13.1",
     "vsce": "^1.74.0"
   }
 }
