@@ -1,4 +1,5 @@
 {
+  "publisher": "pecigonzalo",
   "name": "vscode-terraform-syntax",
   "version": "0.0.1",
   "description": "Terraform Syntax for Visual Studio Code",
@@ -41,5 +42,8 @@
   },
   "dependencies": {
     "js-yaml": "^3.13.1"
+  },
+  "devDependencies": {
+    "vsce": "^1.74.0"
   }
 }
