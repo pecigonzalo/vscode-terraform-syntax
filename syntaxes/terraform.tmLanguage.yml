@@ -1,0 +1,266 @@
+---
+scopeName: "source.terraform"
+patterns:
+  - include: "#hcl"
+
+repository:
+  # BASIC
+  basic:
+    patterns:
+      - include: "#comments"
+      - include: "#block"
+
+  comments:
+    comment: Comments
+    name: comment.line.terraform
+    begin: "#|//"
+    end: $\n?
+    captures:
+      "0": { name: punctuation.definition.comment.terraform }
+
+  block:
+    comment: Block comments
+    name: comment.block.terraform
+    begin: /\*
+    end: \*/
+    captures:
+      "0": { name: punctuation.definition.comment.terraform }
+
+  # HCL
+  hcl:
+    patterns:
+      - include: "#basic"
+      - include: "#nested_blocks"
+      - include: "#quoted_block_labels"
+      - include: "#attributes_definitions"
+      - include: "#keywords"
+
+  nested_blocks:
+    comment: Nested Blocks
+    name: meta.block.terraform
+    begin: "{"
+    beginCaptures:
+      "0": { name: punctuation.definition.block.terraform }
+    end: "}"
+    endCaptures:
+      "0": { name: punctuation.definition.block.terraform }
+    patterns:
+      - include: "#hcl"
+
+  quoted_block_labels:
+    comment: Quoted Block Labels
+    match: '(")([^"]+)(")'
+    captures:
+      "1":
+        { name: string.terraform punctuation.definition.string.begin.terraform }
+      "2": { name: string.value.terraform }
+      "3":
+        { name: string.terraform punctuation.definition.string.end.terraform }
+
+  attributes_definitions:
+    comment: Attribute Definitions
+    name: meta.attr.terraform
+    begin: '(\w+)\s*(=)\s*'
+    beginCaptures:
+      "1": { name: variable.other.assignment.terraform }
+      "2": { name: keyword.operator.terraform }
+    end: "$"
+    patterns:
+      - include: "#hclexpr"
+
+  keywords:
+    comment: Keywords
+    match: '[-\w]+'
+    captures:
+      "0": { name: keyword.other.terraform }
+
+  # HCL Expression
+  hclexpr:
+    patterns:
+      - include: "#basic"
+      - include: "#constants"
+      - include: "#numbers"
+      - include: "#types"
+      - include: "#function_calls"
+      - include: "#variables_and_attributes"
+      - include: "#heredoc_template"
+      - include: "#string_template"
+      - include: "#operator"
+      - include: "#parenthesis"
+      - include: "#tuple_constructor"
+      - include: "#object_constructor"
+
+  constants:
+    comment: Language constants (true, false, null)
+    name: constant.language.terraform
+    match: \b(true|false|null)\b
+
+  types:
+    comment: Type keywords known to Terraform.
+    name: storage.type.terraform
+    match: '\b(string|number|bool|list|map|set|object|tuple|any)\b'
+
+  numbers:
+    comment: Numbers
+    name: constant.numeric.terraform
+    match: \b([0-9]+)(.[0-9]+)?([eE][0-9]+)?\b
+
+  function_calls:
+    comment: Function Calls
+    name: meta.function-call.terraform
+    begin: ([-\w]+)(\()
+    beginCaptures:
+      "1": { name: support.function.builtin.terraform }
+      "2": { name: keyword.other.section.begin.terraform }
+    end: (\))
+    endCaptures:
+      "1": { name: keyword.other.section.end.terraform }
+    patterns:
+      - include: "#hclexpr"
+
+  variables_and_attributes:
+    comment: Variables and Attribute Names
+    match: '[-\w]+'
+    captures:
+      "0": { name: variable.other.terraform }
+
+  heredoc_template:
+    comment: Heredoc Templates
+    name: meta.heredoc-template.terraform
+    begin: (?>\s*<<(\w+))
+    beginCaptures:
+      "0": { name: punctuation.definition.string.begin.terraform }
+      "1": { name: keyword.operator.heredoc.terraform }
+    end: ^\s*\1$
+    endCaptures:
+      "0":
+        {
+          name: punctuation.definition.string.end.terraform keyword.operator.heredoc.terraform,
+        }
+    patterns:
+      - include: "#hcltemplate"
+
+  string_template:
+    comment: String Templates
+    name: meta.string-template.terraform
+    begin: \"
+    beginCaptures:
+      "0":
+        { name: string.terraform punctuation.definition.string.begin.terraform }
+    end: \"
+    endCaptures:
+      "0":
+        { name: string.terraform punctuation.definition.string.end.terraform }
+    patterns:
+      - include: "#hcltemplate"
+      - match: '(^"|$\{|%\{)+'
+        name: "string.quoted.double.terraform"
+
+  operator:
+    comment: Operators
+    match: '(!=|==|>=|<=|&&|\|\||[-+*/%<>!?:])'
+    captures:
+      "0": { name: keyword.operator.terraform }
+
+  parenthesis:
+    comment: Parentheses
+    name: meta.parentheses.terraform
+    begin: '\('
+    beginCaptures:
+      "0": { name: meta.brace.round.terraform }
+    end: '\)'
+    endCaptures:
+      "0": { name: meta.brace.round.terraform }
+    patterns:
+      - include: "#hclexpr"
+
+  tuple_constructor:
+    comment: Tuple Constructor
+    name: meta.tuple.terraform
+    begin: '\['
+    beginCaptures:
+      "0": { name: meta.brace.square.terraform }
+    end: '\]'
+    endCaptures:
+      "0": { name: meta.brace.square.terraform }
+    patterns:
+      - match: "(for|in)"
+        captures:
+          "0": { name: keyword.control.terraform }
+      - include: "#hclexpr"
+
+  object_constructor:
+    comment: Object Constructor
+    name: meta.object.terraform
+    begin: '\{'
+    beginCaptures:
+      "0": { name: meta.brace.curly.terraform }
+    end: '\}'
+    endCaptures:
+      "0": { name: meta.brace.curly.terraform }
+    patterns:
+      - match: "(for|in)"
+        captures:
+          "0": { name: keyword.control.terraform }
+      - match: '(=>|\.\.\.)'
+        captures:
+          "0": { name: keyword.operator.terraform }
+      - include: "#hclexpr"
+
+  # HCL Template
+  hcltemplate:
+    patterns:
+      - include: "#interpolation_sequences"
+      - include: "#control_sequences"
+
+  interpolation_sequences:
+    comment: Interpolation Sequences
+    name: meta.interp.terraformtemplate
+    begin: '[^\$]?(\$\{~?)'
+    beginCaptures:
+      "1": { name: entity.tag.embedded.start.terraformtemplate }
+    end: "~?}"
+    endCaptures:
+      "0": { name: entity.tag.embedded.end.terraformtemplate }
+    patterns:
+      - include: "#hclexpr"
+
+  control_sequences:
+    comment: Control Sequences
+    name: meta.control.terraformtemplate
+    begin: '[^\%]?(\%\{~?)'
+    beginCaptures:
+      "1": { name: entity.tag.embedded.start.terraformtemplate }
+    end: "~?}"
+    endCaptures:
+      "0": { name: entity.tag.embedded.end.terraformtemplate }
+    patterns:
+      - include: "#templateif"
+      - include: "#templatefor"
+      - include: "#templatesimplekw"
+
+  templateif:
+  name: meta.templateif.terraformtemplate
+  begin: '(if)\s*'
+  beginCaptures:
+    "1": { name: keyword.control.terraformtemplate }
+  end: '(?=~?\})'
+  patterns:
+    - include: "#hclexpr"
+
+  templatefor:
+    name: meta.templatefor.terraformtemplate
+    begin: '(for)\s*(\w+)\s*(,\s*(\w+)\s*)?(in)'
+    beginCaptures:
+      "1": { name: keyword.control.terraformtemplate }
+      "2": { name: variable.other.terraform }
+      "4": { name: variable.other.terraform }
+      "5": { name: keyword.control.terraformtemplate }
+    end: '(?=~?\})'
+    patterns:
+      - include: "#hclexpr"
+
+  templatesimplekw:
+    match: (else|endif|endfor)
+    captures:
+      "0": { name: keyword.control.terraform }
