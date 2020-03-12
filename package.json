@@ -1,0 +1,45 @@
+{
+  "name": "vscode-terraform-syntax",
+  "version": "0.0.1",
+  "description": "Terraform Syntax for Visual Studio Code",
+  "license": "MIT",
+  "author": {
+    "name": "Gonzalo Peci"
+  },
+  "engines": {
+    "vscode": "^1.43.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pecigonzalo/vscode-terraform-syntax.git"
+  },
+  "scripts": {
+    "lang": "js-yaml syntaxes/terraform.tmLanguage.yml > syntaxes/terraform.tmLanguage.json"
+  },
+  "contributes": {
+    "languages": [{
+      "id": "terraform",
+      "aliases": [
+        "Terraform",
+        "terraform"
+      ],
+      "extensions": [
+        ".tf",
+        ".tfvars",
+        ".hcl"
+      ],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "terraform",
+      "scopeName": "source.terraform",
+      "path": "./syntaxes/terraform.tmLanguage.json"
+    }]
+  },
+  "dependencies": {
+    "js-yaml": "^3.13.1"
+  }
+}
