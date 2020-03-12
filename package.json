@@ -1,7 +1,7 @@
 {
   "publisher": "pecigonzalo",
   "name": "vscode-terraform-syntax",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Terraform Syntax for Visual Studio Code",
   "license": "MIT",
   "author": {
@@ -23,23 +23,27 @@
     "deploy": "vsce publish --yarn"
   },
   "contributes": {
-    "languages": [{
-      "id": "tf",
-      "aliases": [
-        "Terraform Syntax"
-      ],
-      "extensions": [
-        ".tf",
-        ".tfvars",
-        ".hcl"
-      ],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "tf",
-      "scopeName": "source.terraform",
-      "path": "./syntaxes/terraform.tmLanguage.json"
-    }]
+    "languages": [
+      {
+        "id": "tf",
+        "aliases": [
+          "Terraform Syntax"
+        ],
+        "extensions": [
+          ".tf",
+          ".tfvars",
+          ".hcl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "tf",
+        "scopeName": "source.terraform",
+        "path": "./syntaxes/terraform.tmLanguage.json"
+      }
+    ]
   },
   "devDependencies": {
     "js-yaml": "^3.13.1",
