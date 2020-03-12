@@ -22,7 +22,7 @@
   },
   "contributes": {
     "languages": [{
-      "id": "terraform",
+      "id": "tf",
       "aliases": [
         "Terraform",
         "terraform"
@@ -35,8 +35,8 @@
       "configuration": "./language-configuration.json"
     }],
     "grammars": [{
-      "language": "terraform",
-      "scopeName": "source.terraform",
+      "language": "tf",
+      "scopeName": "source.tf",
       "path": "./syntaxes/terraform.tmLanguage.json"
     }]
   },

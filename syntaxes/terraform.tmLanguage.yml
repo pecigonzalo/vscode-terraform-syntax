@@ -1,5 +1,5 @@
 ---
-scopeName: "source.terraform"
+scopeName: "source.tf"
 patterns:
   - include: "#hcl"
 
